@@ -43,7 +43,6 @@ services:
       '--collation-server=utf8mb4_unicode_ci'
     ]
   composer_installation:
-    container_name: composer_installation
     image: composer
     volumes:
       - ./src:/app
