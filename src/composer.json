@@ -1,0 +1,13 @@
+{
+	"name": "donwilson/docker-php-app-website",
+	"type": "project",
+	"homepage": "https://github.com/donwilson/docker-php-app",
+	"license": "proprietary",
+	"authors": [
+		{
+			"name": "Don Wilson",
+			"homepage": "https://pyxol.com/",
+			"role": "Developer"
+		}
+	]
+}

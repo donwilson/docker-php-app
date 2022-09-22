@@ -1,3 +1,4 @@
 <?php
-	print date("r") ."?<br><br>\n";
+	require_once(__DIR__ ."/config.php");
+	
 	phpinfo();

@@ -1,0 +1,5 @@
+dev/*.sql.gz
+vendor/
+config.sensitive_passwords.php
+composer.phar
+.htpasswd
