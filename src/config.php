@@ -3,7 +3,7 @@
 	define('DEV_MODE', true);
 	
 	// errors
-	//define('PRINT_PHP_ERRORS', DEV_MODE);
+	define('PRINT_PHP_ERRORS', DEV_MODE);
 	define('PRINT_SQL_ERRORS', DEV_MODE);
 	define('DIE_ON_SQL_ERROR', DEV_MODE);
 	
@@ -38,7 +38,7 @@
 	require_once(VENDOR_DIR ."autoload.php");
 	
 	// errors
-	if(defined('DEV_MODE') && DEV_MODE) {
+	if(defined('PRINT_PHP_ERRORS') && PRINT_PHP_ERRORS) {
 		@include_once(INCLUDE_DIR ."errors.php");
 	}
 	

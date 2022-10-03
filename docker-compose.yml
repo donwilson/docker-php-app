@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   php-apache:
-    container_name: ${WWW_CONTAINER_NAME}
+    container_name: "${PROJECT_KEY}-www"
     build:
       context: ./docker
       dockerfile: php-apache.Dockerfile
@@ -10,11 +10,16 @@ services:
     env_file:
       - ./.env
     environment:
-      DB_HOST: ${DB_CONTAINER_NAME}
+      PROJECT_KEY: ${PROJECT_KEY}
+      DB_TYPE: ${DB_CONNECTION_TYPE}
+      DB_HOST: "${PROJECT_KEY}-mysql"
       DB_PORT: ${DB_PORT}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
+      CACHE_TYPE: ${CACHE_TYPE}
+      CACHE_HOST: "${PROJECT_KEY}-memcached"
+      CACHE_PORT: ${CACHE_PORT}
     volumes:
       - ./src:/var/www/html
       - ./docker/php-configs.ini:/usr/local/etc/php/conf.d/php-configs.ini
@@ -22,8 +27,9 @@ services:
       - 8000:80
     links:
       - db
+      - memcached
   db:
-    container_name: ${DB_CONTAINER_NAME}
+    container_name: "${PROJECT_KEY}-mysql"
     image: mysql
     restart: unless-stopped
     env_file:
@@ -42,6 +48,9 @@ services:
       '--character-set-server=utf8mb4',
       '--collation-server=utf8mb4_unicode_ci'
     ]
+  memcached:
+    container_name: "${PROJECT_KEY}-memcached"
+    image: memcached:latest
   composer_installation:
     image: composer
     volumes:

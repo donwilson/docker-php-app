@@ -3,6 +3,9 @@
 		throw new Exception("Cannot run this directly");
 	}
 	
+	// cache
+	require_once(INCLUDE_DIR ."cache.memcached.php");
+	
 	// database
 	require_once(INCLUDE_DIR ."database.mysql.pdo.php");
 	

@@ -1,5 +1,5 @@
 <?php
-	// included only when DEV_MODE=true
+	// included only when PRINT_PHP_ERRORS=true
 	ini_set('display_errors', 'On');
 	ini_set('html_errors', 0);
 	
