@@ -1,4 +1,7 @@
 <?php
+	/**
+	 * Connect to database using PDO (if not already connected)
+	 */
 	function db_connect() {
 		if(!isset($GLOBALS['db_instance'])) {
 			try {
@@ -7,17 +10,29 @@
 				$GLOBALS['db_instance']->exec("SET NAMES ". DB_CHARSET);
 				$GLOBALS['db_instance']->exec("SET CHARACTER SET ". DB_CHARSET);
 			} catch(PDOException $e) {
-				die("Could not connect to the database server (cause: ". $e->getMessage() .")");
+				if(defined('DIE_ON_SQL_ERROR') && DIE_ON_SQL_ERROR) {
+					die("Could not connect to the database server (cause: ". $e->getMessage() .")");
+				}
 			}
 		}
 	}
 	
+	/**
+	 * Change the currently selected database
+	 * @param string $database_name Deprecated
+	 * @throws Exception
+	 */
 	function db_change_database($database_name=false) {
 		db_connect();
 		
 		throw new Exception("db_change_database(PDO) does not allow dynamically changing database name");
 	}
 	
+	/**
+	 * Escape a string for use in a SQL query
+	 * @param string|array $string
+	 * @return string|array
+	 */
 	function esc_sql($string) {
 		db_connect();
 		
@@ -25,10 +40,14 @@
 			return array_map('esc_sql', $string);
 		}
 		
-		//return addslashes($string);
 		return $GLOBALS['db_instance']->quote($string);
 	}
 	
+	/**
+	 * Run a query. If the query is an INSERT, return the last insert ID
+	 * @param string $query SQL query to run
+	 * @return bool|int
+	 */
 	function db_query($query) {
 		db_connect();
 		
@@ -61,6 +80,10 @@
 		}
 	}
 	
+	/**
+	 * Get the last error message (if any)
+	 * @return string|null
+	 */
 	function db_last_error() {
 		if(isset($GLOBALS['sql_last_errorInfo'])) {
 			return $GLOBALS['sql_last_errorInfo'];
@@ -69,6 +92,12 @@
 		return null;
 	}
 	
+	/**
+	 * Fetch an array of rows from a query
+	 * @param string $query SQL query to run
+	 * @param string|false $column_key If set, the returned array will be indexed by the value of this column
+	 * @return array|false
+	 */
 	function get_rows($query, $column_key=false) {
 		db_connect();
 		
@@ -91,8 +120,14 @@
 		}
 		
 		return $rows;
-	}	function get_results($query, $column_key=false) { return get_rows($query, $column_key); }
+	}
 	
+	/**
+	 * Fetch a single row from a query
+	 * @param string $query SQL query to run
+	 * @param string|int $column_key If set, the returned array will be indexed by the value of this column. Values are either the column name or the column index
+	 * @return array|false
+	 */
 	function get_col($query, $column_key=0) {
 		db_connect();
 		
@@ -117,6 +152,13 @@
 		return $rows;
 	}
 	
+	/**
+	 * Fetch a single row from a query
+	 * @param string $query SQL query to run
+	 * @param string|int $assoc_key If set, the returned array will be indexed by the value of this column. Values are either the column name or the column index
+	 * @param string|int $column_key If set, the returned array will be indexed by the value of this column. Values are either the column name or the column index
+	 * @return array|false
+	 */
 	function get_col_assoc($query, $assoc_key, $column_key=0) {
 		db_connect();
 		
@@ -166,6 +208,11 @@
 		return $rows;
 	}
 	
+	/**
+	 * Fetch a single row from a query
+	 * @param string $query SQL query to run
+	 * @return array|false
+	 */
 	function get_row($query) {
 		db_connect();
 		
@@ -182,6 +229,12 @@
 		return $result->fetch(PDO::FETCH_ASSOC);
 	}
 	
+	/**
+	 * Fetch a single value from a query.
+	 * @param string $query SQL query to run
+	 * @param string|false $column If set, the returned value will be the value of this column
+	 * @return mixed|false
+	 */
 	function get_var($query, $column=false) {
 		if(false === ($row = get_row($query))) {
 			return false;

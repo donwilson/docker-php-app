@@ -1,35 +1,35 @@
 version: '3.8'
+
 services:
   php-apache:
-    container_name: "${PROJECT_KEY}-www"
     build:
-      context: ./docker
+      context: ./.docker/php-apache
       dockerfile: php-apache.Dockerfile
     depends_on:
       - db
+      - memcached
     env_file:
       - ./.env
     environment:
-      PROJECT_KEY: ${PROJECT_KEY}
+      PROJECT_NAME: ${COMPOSE_PROJECT_NAME}
       DB_TYPE: ${DB_CONNECTION_TYPE}
-      DB_HOST: "${PROJECT_KEY}-mysql"
+      DB_HOST: "${COMPOSE_PROJECT_NAME}-mysql-1"
       DB_PORT: ${DB_PORT}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
       CACHE_TYPE: ${CACHE_TYPE}
-      CACHE_HOST: "${PROJECT_KEY}-memcached"
+      CACHE_HOST: "${COMPOSE_PROJECT_NAME}-memcached-1"
       CACHE_PORT: ${CACHE_PORT}
     volumes:
       - ./src:/var/www/html
-      - ./docker/php-configs.ini:/usr/local/etc/php/conf.d/php-configs.ini
+      - ./.docker/php-apache/php-configs.ini:/usr/local/etc/php/conf.d/php-configs.ini
     ports:
-      - 8000:80
+      - 80:80
     links:
       - db
       - memcached
   db:
-    container_name: "${PROJECT_KEY}-mysql"
     image: mysql
     restart: unless-stopped
     env_file:
@@ -39,17 +39,14 @@ services:
       MYSQL_DATABASE: ${DB_NAME}
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - 9906:3306
     volumes:
-      - collectors_db_data:/var/lib/mysql
+      - php82_mysql_db_data:/var/lib/mysql
     command: [
       '--default_authentication_plugin=mysql_native_password',
       '--character-set-server=utf8mb4',
       '--collation-server=utf8mb4_unicode_ci'
     ]
   memcached:
-    container_name: "${PROJECT_KEY}-memcached"
     image: memcached:latest
   composer_installation:
     image: composer
@@ -57,4 +54,4 @@ services:
       - ./src:/app
     command: composer install --ignore-platform-reqs
 volumes:
-  collectors_db_data:   # store database into a volume so we can pause the containers
+  php82_mysql_db_data:   # store database into a volume so we can pause the containers

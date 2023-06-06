@@ -10,9 +10,7 @@
 	}
 	
 	// via http://core.trac.wordpress.org/browser/tags/3.4.2/wp-includes/formatting.php#L2546
-	function esc_url($url, $protocols = null) {
-		$original_url = $url;
-		
+	function esc_url($url) {
 		if(empty($url)) {
 			return $url;
 		}
